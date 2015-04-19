@@ -4,7 +4,7 @@
  * */
 public class Variables {
 	//The total population of the world
-	public static int num_people = 2;
-	public static int max_vision = 1;
+	public static int num_people = 500;
+	public static int max_vision = 3;
 
 }
