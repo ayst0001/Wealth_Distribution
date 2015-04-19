@@ -15,4 +15,8 @@ public class Turtle {
 		public int y;
 		//Which direction is the turtle facing
 		public int facing;
+		public void forward() {
+			// TODO Auto-generated method stub
+			
+		}
 }

@@ -207,6 +207,7 @@ public class World {
 		}
 		//harvest before any turtle sets the patch to 0
 		harvest();
+		//turtle procedure
 		for (int i=0;i<Variables.num_people;i++){
 			Move_eat_age_die(person[i]);
 		}
@@ -232,8 +233,49 @@ public class World {
 	}
 
 	private void Move_eat_age_die(Turtle person) {
-		// TODO Auto-generated method stub
+		//move one step forward
+		move_forward(person);
+		//consume according to metabolism
+		person.wealth -= person.metabolism;
+		//grow older
+		person.age += 1;
+		//check if anyone is about to die
+		if(person.wealth<0){
+			reborn(person);
+		}
+		if(person.age>person.lift_expectancy){
+			reborn(person);
+		}
 		
+	}
+
+
+	private void move_forward(Turtle person) {
+		if (person.facing == 0){
+			if(person.y>=1){
+				person.y -= 1;
+			}
+			else{}
+		}
+		else if (person.facing == 1){
+			if(person.x+1<=Parameter.WORLD_SIZE-1){
+				person.x += 1;
+			}
+			else{}
+		}
+		else if (person.facing == 2){
+			if(person.y+1<=Parameter.WORLD_SIZE-1){
+				person.y += 1;
+			}
+			else{}
+		}
+		else if (person.facing == 3){
+			if(person.x >= 1){
+				person.x -= 1;
+			}
+			else{}
+		}
+		else{}
 	}
 
 
