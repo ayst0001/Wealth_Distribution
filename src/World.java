@@ -15,7 +15,37 @@ public class World {
 		//Initiate all the turtles
 		Create_turtles();
 	}
+	
+	public void go(int t) {
+		//choose direction hold most grain with the vision
+		for (int i=0;i<Variables.num_people;i++){
+			Turn_toward_grain(person[i]);
+		}
+		//harvest before any turtle sets the patch to 0
+		harvest();
+		//turtle procedure
+		for (int i=0;i<Variables.num_people;i++){
+			Move_eat_age_die(person[i]);
+		}
+		//grow grain
+		Grow_grain(t);
+	}
 
+
+	private void Grow_grain(int t) {
+		if (t%Variables.grain_growth_interval == 0){
+			for (int i=0; i<Parameter.WORLD_SIZE; i++)
+				for (int j=0; j<Parameter.WORLD_SIZE; j++){
+					if ((patch[i][j].grain + Variables.num_grain_growth) < patch[i][j].max_grain){
+						patch[i][j].grain += Variables.num_grain_growth;
+					}
+					else{
+						patch[i][j].grain = patch[i][j].max_grain;
+					}
+				}
+		}
+		else{}
+	}
 
 	public void setup_turtles() {
 		// Set initial turtle variables
@@ -193,27 +223,7 @@ public class World {
 			patch[i+1][j-1].grain += portion;
 			patch[i-1][j+1].grain += portion;
 		}
-			
-	
-		
-		
 	}
-
-
-	public void go() {
-		//choose direction hold most grain with the vision
-		for (int i=0;i<Variables.num_people;i++){
-			Turn_toward_grain(person[i]);
-		}
-		//harvest before any turtle sets the patch to 0
-		harvest();
-		//turtle procedure
-		for (int i=0;i<Variables.num_people;i++){
-			Move_eat_age_die(person[i]);
-		}
-		
-	}
-
 
 	private void harvest() {
 		//The grain on the patch will be shared by all person on that location
@@ -246,9 +256,37 @@ public class World {
 		if(person.age>person.lift_expectancy){
 			reborn(person);
 		}
-		
 	}
 
+	private void reborn(Turtle person) {
+		//Facing direction 0,1,2 or 3 randomly
+		person.facing = Random.i(4);
+		//Reset life expectancy
+		person.lift_expectancy = Variables.life_expectancy_min + 
+				Random.i((Variables.life_expectancy_max-Variables.life_expectancy_min+1));
+		//Reset metabolism
+		person.metabolism = 1 + Random.i(Variables.metabolism_max);
+		//Initial wealth between the richest and the poorest
+		person.wealth = person.metabolism + Random.i(Richest_person_grain());
+		//Allocate a random vision
+		person.vision = 1+ Random.i(Variables.max_vision);
+		//Everyone has a random initial age
+		person.age = 0;
+		//Start at a random location
+		person.x = Random.i(Parameter.WORLD_SIZE);
+		person.y = Random.i(Parameter.WORLD_SIZE);
+	}
+
+	private int Richest_person_grain() {
+		int richest_person_grain = 0;
+		for (int i=0;i<Variables.num_people;i++){
+			if (person[i].wealth > richest_person_grain){
+				richest_person_grain = person[i].wealth;
+			}
+			else{}
+		}
+		return richest_person_grain = 0;
+	}
 
 	private void move_forward(Turtle person) {
 		if (person.facing == 0){
@@ -278,7 +316,6 @@ public class World {
 		else{}
 	}
 
-
 	private void Turn_toward_grain(Turtle person) {
 		//Start from facing north
 		person.facing = 0;
@@ -300,8 +337,6 @@ public class World {
 			best_amount = grain_west(person);
 		}
 	}
-
-
 	private int grain_west(Turtle person) {
 		double grain_ahead = 0;
 		if(person.x >= person.vision){
@@ -318,8 +353,6 @@ public class World {
 		}
 		
 	}
-
-
 	private int grain_south(Turtle person) {
 		double grain_ahead = 0;
 		if((person.y+ person.vision) <= (Parameter.WORLD_SIZE-1)){
@@ -335,8 +368,6 @@ public class World {
 			return ((int)grain_ahead);
 		}
 	}
-
-
 	private int grain_east(Turtle person) {
 		double grain_ahead = 0;
 		if ((person.x+person.vision)<=(Parameter.WORLD_SIZE-1)){
@@ -352,8 +383,6 @@ public class World {
 			return ((int)grain_ahead);
 		}
 	}
-
-
 	private int grain_north(Turtle person) {
 		double grain_ahead = 0;
 		if (person.y >= person.vision){
@@ -370,6 +399,4 @@ public class World {
 		}
 	}
 }
-	
-
 

@@ -21,4 +21,6 @@ public class Variables {
 	public static int grain_growth_interval = 2;
 	//The amount of grain growth each time
 	public static int num_grain_growth = 5;
+	//The number of ticks to be tested
+	public static int tick= 500;
 }

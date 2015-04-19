@@ -13,7 +13,10 @@ public class Driver {
 		world.setup_patches();
 		world.setup_turtles();
 		//Start simulation
-		world.go();
+		for (int i=0;i<Variables.tick;i++){
+			world.go(i);
+		}
+		
 		//testing
 		//PatchStatus();
 		TurtleStatus();
