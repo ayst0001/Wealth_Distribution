@@ -4,6 +4,7 @@
  * Relatively they are hard-coded
  * */
 public class Parameter {
-	int MAX_GRAIN = 50;
+	static int MAX_GRAIN = 50;
+	static int WORLD_SIZE = 51;
 	
 }

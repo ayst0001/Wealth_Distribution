@@ -16,7 +16,17 @@ public class Driver {
 	}
 
 	private static void setup_patches() {
-		//give some patches the most grain possible
+		Patch[][] patch = new Patch[Parameter.WORLD_SIZE][Parameter.WORLD_SIZE];
+		//give some patches the most grain possible --
+		//these patches are the "best land"
+		for (int i=1; i<51; i++)
+			for (int j=1; j<51; j++){
+			if(Random.f(100.0)<=Variables.percent_best_land){
+				patch[i][j].grain = Parameter.MAX_GRAIN;
+			}
+		}
+		
+		
 	}
 	
 	private static void setup_turtles() {
