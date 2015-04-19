@@ -1,8 +1,17 @@
 //This class is used to create world entity
+//This class is also handling the status updates of world entities
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class World {
 	//World contains patches
 	//The total amount of patch subject to the size of the  world
-	public Patch[][] patch = new Patch[Parameter.WORLD_SIZE][Parameter.WORLD_SIZE];
+	public Patch[][] patch = 
+			new Patch[Parameter.WORLD_SIZE][Parameter.WORLD_SIZE];
 
 	//World also contains turtles
 	//The total amount of turtles is determined by user input
@@ -31,12 +40,14 @@ public class World {
 		Grow_grain(t);
 	}
 
-
+	//If exceed maximum grain amount, set maximum values
+	//Otherwise add the fix value
 	private void Grow_grain(int t) {
 		if (t%Variables.grain_growth_interval == 0){
 			for (int i=0; i<Parameter.WORLD_SIZE; i++)
 				for (int j=0; j<Parameter.WORLD_SIZE; j++){
-					if ((patch[i][j].grain + Variables.num_grain_growth) < patch[i][j].max_grain){
+					if ((patch[i][j].grain + Variables.num_grain_growth) 
+							< patch[i][j].max_grain){
 						patch[i][j].grain += Variables.num_grain_growth;
 					}
 					else{
@@ -54,8 +65,9 @@ public class World {
 			//Everyone starts facing direction 0,1,2 or 3
 			person[i].facing = Random.i(4);
 			//Everyone has different life expectancy
-			person[i].lift_expectancy = Variables.life_expectancy_min + 
-					Random.i((Variables.life_expectancy_max-Variables.life_expectancy_min+1));
+			person[i].life_expectancy = Variables.life_expectancy_min + 
+					Random.i((Variables.life_expectancy_max
+							-Variables.life_expectancy_min+1));
 			//Everyone consumes different amount of grains each tick
 			person[i].metabolism = 1 + Random.i(Variables.metabolism_max);
 			//Allocate random initial wealth
@@ -63,7 +75,7 @@ public class World {
 			//Everyone has a random vision
 			person[i].vision = 1+ Random.i(Variables.max_vision);
 			//Everyone has a random initial age
-			person[i].age = Random.i(person[i].lift_expectancy);
+			person[i].age = Random.i(person[i].life_expectancy);
 			//Start at a random location
 			person[i].x = Random.i(Parameter.WORLD_SIZE);
 			person[i].y = Random.i(Parameter.WORLD_SIZE);
@@ -98,6 +110,7 @@ public class World {
 			}
 	}
 
+	//Two types of spread algorithm provided in Netlogo
 	private void Spread_grain_type_one() {
 		for (int i=0; i<Parameter.WORLD_SIZE; i++)
 			for (int j=0; j<Parameter.WORLD_SIZE; j++){
@@ -114,6 +127,7 @@ public class World {
 				}
 	}
 
+	//initiating Person one by one
 	private void Create_turtles() {
 		for (int i=0;i<Variables.num_people;i++){
 			person[i] = new Turtle();
@@ -122,7 +136,7 @@ public class World {
 	private void Create_patches() {
 		for (int i=0; i<Parameter.WORLD_SIZE; i++)
 			for (int j=0; j<Parameter.WORLD_SIZE; j++){
-			patch[i][j] = new Patch(i,j);
+			patch[i][j] = new Patch();
 		}
 	}
 	private void Give_some_patches_most_grain() {		
@@ -137,7 +151,10 @@ public class World {
 	}
 
 	private void Diffues(int i, int j, double e) {
-		//Handle corners
+		//Method to spread grain to the neighbors
+		//When there's less than 8 neighbors, each neighbou still get 1/8
+		//The rest goes back to the original patch
+		//Handle corners first
 		//top left corner
 		if (i==0 && j==0){
 			double portion = patch[i][j].grain*e/8;
@@ -226,12 +243,15 @@ public class World {
 	}
 
 	private void harvest() {
-		//The grain on the patch will be shared by all person on that location
+		//The grain on the patch will be 
+		//shared by all person on that location
 		for (int i=0;i<Variables.num_people;i++){
-			person[i].wealth += (int)(patch[person[i].x][person[i].y].grain/count_turtles_here(person[i]));
+			person[i].wealth += (int)(patch[person[i].x][person[i].y].grain
+					/count_turtles_here(person[i]));
 		}
 	}
 
+	//count the number of person on the same spot
 	private double count_turtles_here(Turtle p) {
 		double person_count = 0;
 		for (int i=0;i<Variables.num_people;i++){
@@ -242,6 +262,7 @@ public class World {
 		return person_count;
 	}
 
+	//function copied from netlogo
 	private void Move_eat_age_die(Turtle person) {
 		//move one step forward
 		move_forward(person);
@@ -253,21 +274,24 @@ public class World {
 		if(person.wealth<0){
 			reborn(person);
 		}
-		if(person.age>person.lift_expectancy){
+		if(person.age>person.life_expectancy){
 			reborn(person);
 		}
 	}
 
+	//person reborn after dead
 	private void reborn(Turtle person) {
 		//Facing direction 0,1,2 or 3 randomly
 		person.facing = Random.i(4);
 		//Reset life expectancy
-		person.lift_expectancy = Variables.life_expectancy_min + 
-				Random.i((Variables.life_expectancy_max-Variables.life_expectancy_min+1));
+		person.life_expectancy = Variables.life_expectancy_min + 
+				Random.i((Variables.life_expectancy_max
+						-Variables.life_expectancy_min+1));
 		//Reset metabolism
 		person.metabolism = 1 + Random.i(Variables.metabolism_max);
 		//Initial wealth between the richest and the poorest
-		person.wealth = person.metabolism + Random.i(Richest_person_grain());
+		person.wealth = person.metabolism + 
+				Random.i(Richest_person_grain());
 		//Allocate a random vision
 		person.vision = 1+ Random.i(Variables.max_vision);
 		//Everyone has a random initial age
@@ -277,6 +301,7 @@ public class World {
 		person.y = Random.i(Parameter.WORLD_SIZE);
 	}
 
+	//get to know how much does the richest person own
 	private int Richest_person_grain() {
 		int richest_person_grain = 0;
 		for (int i=0;i<Variables.num_people;i++){
@@ -288,6 +313,7 @@ public class World {
 		return richest_person_grain = 0;
 	}
 
+	//To let person move forward
 	private void move_forward(Turtle person) {
 		if (person.facing == 0){
 			if(person.y>=1){
@@ -316,6 +342,7 @@ public class World {
 		else{}
 	}
 
+	//To let person turn to the most promising direction
 	private void Turn_toward_grain(Turtle person) {
 		//Start from facing north
 		person.facing = 0;
@@ -398,5 +425,35 @@ public class World {
 			return((int)grain_ahead);
 		}
 	}
+
+	//Output data for lorenz cruve and gini index
+	public void Report_lorenz_gini() {
+		try{
+			File csv = new File("lorenz_gini_output.csv");
+			//output heads
+			BufferedWriter head = 
+					new BufferedWriter(new FileWriter(csv,true));
+			head.write("Person_No,Wealth");
+			head.newLine();
+			head.close();
+			//output data
+			for (int i=0;i<Variables.num_people;i++){
+				BufferedWriter bw = 
+						new BufferedWriter(new FileWriter(csv,true));
+				bw.write(Integer.toString(i) + 
+						"," + Integer.toString(person[i].wealth));
+				bw.newLine();
+				bw.close();
+			}
+		}
+		catch(FileNotFoundException e){
+			e.printStackTrace();
+		}
+		catch(IOException e){
+			e.printStackTrace();
+		}
+	}
+
+
 }
 
