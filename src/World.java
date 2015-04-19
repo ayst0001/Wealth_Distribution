@@ -34,6 +34,9 @@ public class World {
 			person[i].vision = 1+ Random.i(Variables.max_vision);
 			//Everyone has a random initial age
 			person[i].age = Random.i(person[i].lift_expectancy);
+			//Start at a random location
+			person[i].x = Random.i(Parameter.WORLD_SIZE);
+			person[i].y = Random.i(Parameter.WORLD_SIZE);
 		}
 	}
 
@@ -194,6 +197,135 @@ public class World {
 	
 		
 		
+	}
+
+
+	public void go() {
+		//choose direction hold most grain with the vision
+		for (int i=0;i<Variables.num_people;i++){
+			Turn_toward_grain(person[i]);
+		}
+		//harvest before any turtle sets the patch to 0
+		harvest();
+		for (int i=0;i<Variables.num_people;i++){
+			Move_eat_age_die(person[i]);
+		}
+		
+	}
+
+
+	private void harvest() {
+		//The grain on the patch will be shared by all person on that location
+		for (int i=0;i<Variables.num_people;i++){
+			person[i].wealth += (int)(patch[person[i].x][person[i].y].grain/count_turtles_here(person[i]));
+		}
+	}
+
+	private double count_turtles_here(Turtle p) {
+		double person_count = 0;
+		for (int i=0;i<Variables.num_people;i++){
+			if ((person[i].x == p.x)&&(person[i].y == p.y)){
+				person_count += 1;
+			}
+		};
+		return person_count;
+	}
+
+	private void Move_eat_age_die(Turtle person) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	private void Turn_toward_grain(Turtle person) {
+		//Start from facing north
+		person.facing = 0;
+		//The grain in the north is the best amount
+		int best_amount = grain_north(person);
+		//If the grain amount in the east is better, turn
+		if (grain_east(person)>best_amount){
+			person.facing = 1;
+			best_amount = grain_east(person);
+		}
+		//If the grain amount in the south is better, turn
+		if (grain_south(person)>best_amount){
+			person.facing=2;
+			best_amount = grain_south(person);
+		}
+		//If the grain amount in the west is better, turn
+		if (grain_west(person)>best_amount){
+			person.facing=3;
+			best_amount = grain_west(person);
+		}
+	}
+
+
+	private int grain_west(Turtle person) {
+		double grain_ahead = 0;
+		if(person.x >= person.vision){
+			for (int i=0;i<person.vision;i++){
+				grain_ahead += patch[person.x-i-1][person.y].grain;
+			}
+			return ((int)grain_ahead);
+		}
+		else{
+			for (int i=0;i<person.x;i++){
+				grain_ahead += patch[person.x-i-1][person.y].grain;
+			}
+			return ((int)grain_ahead);
+		}
+		
+	}
+
+
+	private int grain_south(Turtle person) {
+		double grain_ahead = 0;
+		if((person.y+ person.vision) <= (Parameter.WORLD_SIZE-1)){
+			for (int i=0;i<person.vision;i++){
+				grain_ahead += patch[person.x][person.y+i+1].grain;
+			}
+			return ((int)grain_ahead);
+		}
+		else{
+			for (int i=0;i<Parameter.WORLD_SIZE-person.y-1;i++){
+				grain_ahead += patch[person.x][person.y+i+1].grain;
+			}
+			return ((int)grain_ahead);
+		}
+	}
+
+
+	private int grain_east(Turtle person) {
+		double grain_ahead = 0;
+		if ((person.x+person.vision)<=(Parameter.WORLD_SIZE-1)){
+			for (int i=0;i<person.vision;i++){
+				grain_ahead += patch[person.x+i+1][person.y].grain;
+			}
+			return ((int)grain_ahead);
+		}
+		else{
+			for (int i=0;i<Parameter.WORLD_SIZE-person.x-1;i++){
+				grain_ahead += patch[person.x+i+1][person.y].grain;
+			}
+			return ((int)grain_ahead);
+		}
+	}
+
+
+	private int grain_north(Turtle person) {
+		double grain_ahead = 0;
+		if (person.y >= person.vision){
+			for (int i=0;i<person.vision;i++){
+				grain_ahead += patch[person.x][person.y-i-1].grain;
+			}
+			return((int)grain_ahead);
+		}
+		else {
+			for (int i=0 ;i < person.y; i++){
+				grain_ahead += patch[person.x][person.y-i-1].grain;
+			}
+			return((int)grain_ahead);
+		}
 	}
 }
 	

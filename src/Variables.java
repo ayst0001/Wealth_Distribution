@@ -7,6 +7,7 @@ public class Variables {
 	//The total population of the world
 	public static int num_people = 500;
 	//The maximum range a turtle can see
+	//range from 1,2,3...max_vision
 	public static int max_vision = 3;
 	//The max amount of grain one can consume in one tick
 	public static int metabolism_max = 5;

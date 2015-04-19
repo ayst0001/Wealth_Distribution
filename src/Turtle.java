@@ -10,8 +10,9 @@ public class Turtle {
 		public int metabolism;
 		//how many patches ahead a turtle can see
 		public int vision;
-		//What's the current location
-		
+		//What's the current location (on which patch)
+		public int x;
+		public int y;
 		//Which direction is the turtle facing
 		public int facing;
 }
