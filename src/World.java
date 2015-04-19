@@ -4,19 +4,39 @@ public class World {
 	//The total amount of patch subject to the size of the  world
 	public Patch[][] patch = new Patch[Parameter.WORLD_SIZE][Parameter.WORLD_SIZE];
 
+	//World also contains turtles
+	//The total amount of turtles is determined by user input
+	public Turtle[] person = new Turtle[Variables.num_people];
+	
 	//Constructor of a new world
 	public World(){
 		//Initiate all the patches
-		Initiate_patches();
+		Create_patches();
+		//Initiate all the turtles
+		Create_turtles();
 	}
 
-	
 
 	public void setup_turtles() {
-		// TODO Auto-generated method stub
-		
+		// Set initial turtle variables
+		for (int i=0;i<Variables.num_people;i++){
+			
+			//Everyone starts facing direction 0,1,2 or 3
+			person[i].facing = Random.i(4);
+			//Everyone has different life expectancy
+			person[i].lift_expectancy = Variables.life_expectancy_min + 
+					Random.i((Variables.life_expectancy_max-Variables.life_expectancy_min+1));
+			//Everyone consumes different amount of grains each tick
+			person[i].metabolism = 1 + Random.i(Variables.metabolism_max);
+			//Allocate random initial wealth
+			person[i].wealth = person[i].metabolism + Random.i(50);
+			//Everyone has a random vision
+			person[i].vision = 1+ Random.i(Variables.max_vision);
+			//Everyone has a random initial age
+			person[i].age = Random.i(person[i].lift_expectancy);
+		}
 	}
-	
+
 	public void setup_patches() {
 		//give some patches the most grain possible --
 		//these patches are the "best land"
@@ -29,7 +49,8 @@ public class World {
 		}
 		
 		//Spread the grain around some more
-		for (int i=0;i<5;i++){
+		//do 10 times(according to netlogo model) 
+		for (int i=0;i<10;i++){
 			Spread_grain_type_two();
 		}
 		//Set max grain for each patch
@@ -42,7 +63,6 @@ public class World {
 			for (int j=0; j<Parameter.WORLD_SIZE; j++){
 				patch[i][j].max_grain = (int)patch[i][j].grain + 1;
 			}
-		
 	}
 
 	private void Spread_grain_type_one() {
@@ -61,8 +81,12 @@ public class World {
 				}
 	}
 
-	
-	private void Initiate_patches() {
+	private void Create_turtles() {
+		for (int i=0;i<Variables.num_people;i++){
+			person[i] = new Turtle();
+		}
+	}
+	private void Create_patches() {
 		for (int i=0; i<Parameter.WORLD_SIZE; i++)
 			for (int j=0; j<Parameter.WORLD_SIZE; j++){
 			patch[i][j] = new Patch(i,j);

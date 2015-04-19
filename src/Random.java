@@ -5,6 +5,8 @@ public class Random {
 			float random = (float)(Math.random() * range_max) ;
 			return random;
 	}
+		//return an integer from 0 to range_max-1
+		//range_max different results in total
 		public static int i(int range_max) {
 			int random = (int)(Math.random() * range_max) ;
 			return random;

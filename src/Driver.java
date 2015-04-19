@@ -10,36 +10,26 @@ public class Driver {
 	//Main function starts here
 	public static void main(String[] args) {
 		//initial setup
-		Setup();
-		//testing
-		PatchStatus();
-	}
-	
-	private static void Setup() {
-		//initiating patches
 		world.setup_patches();
 		world.setup_turtles();
+		//testing
+		//PatchStatus();
+		TurtleStatus();
 	}
-
-		/*
-		//spread the grain around some more
-		//do ten times(according to netlogo model)
-		for (int k=0; k<10; k++){
-			for (int i=1; i<51; i++)
-				for (int j=1; j<51; j++){
-					//patch[i][j].diffues(0.25);
-				}
-		}
 	
-		
-		
+	private static void TurtleStatus() {
+		for (int i=0;i<Variables.num_people;i++){
+			P.rintln("person " + i + " is facing direction" + world.person[i].facing
+					+ " has wealth" + world.person[i].wealth
+					+ " has age" + world.person[i].age
+					+ " consumes" + world.person[i].metabolism +" graids"
+					+ " may live to" + world.person[i].lift_expectancy + " years");
+			
+			
+		}
 		
 	}
-*/	
-	private static void setup_turtles() {
-		// TODO Auto-generated method stub
-		
-	}
+	
 	private static void PatchStatus() {
 		for (int i=0; i<Parameter.WORLD_SIZE; i++)
 			for (int j=0; j<Parameter.WORLD_SIZE; j++){
